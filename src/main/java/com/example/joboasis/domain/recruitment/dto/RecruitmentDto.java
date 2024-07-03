@@ -1,8 +1,14 @@
 package com.example.joboasis.domain.recruitment.dto;
 
+import com.example.joboasis.domain.company.entity.CompanyMember;
 import com.example.joboasis.domain.recruitment.entity.Recruitment;
 import com.example.joboasis.domain.recruitment.enums.RecruitmentStatus;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import jakarta.persistence.*;
+import lombok.Builder;
+import lombok.Getter;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
 
@@ -23,5 +29,20 @@ public class RecruitmentDto {
 					.closingDate(closingDate)
 					.build();
 		}
+	}
+
+	@Getter
+	@Builder
+	public static class Response {
+		private Long recruitmentId;
+		private String title;
+		private Integer recruitmentCount;
+		private LocalDateTime closingDate;
+		private RecruitmentStatus status;
+		private LocalDateTime postingDate;
+		private LocalDateTime modifiedDate;
+		private String detail;
+		private Long companyMemberId;
+		private String companyName;
 	}
 }
