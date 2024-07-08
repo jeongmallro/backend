@@ -64,4 +64,9 @@ public class ResumeService {
         return resume.toResponseDto();
     }
 
+    @Transactional(readOnly = true)
+    public ResumeResponseDto getResume(Long resumeId) {
+        Resume resume = resumeRepository.findByResumeId(resumeId).orElseThrow(IllegalArgumentException::new);  //예외 처리
+        return resume.toResponseDto();
+    }
 }

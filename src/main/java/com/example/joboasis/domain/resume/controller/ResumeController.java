@@ -32,4 +32,11 @@ public class ResumeController {
         resumeService.getMember(token);
         return resumeService.modifyResume(resumeId, resumeDto);
     }
+
+    @GetMapping("/{resume_id}")
+    public ResumeResponseDto getResume(@PathVariable Long resumeId,
+                                       @RequestHeader Long token) {  //@CookieValue String
+        resumeService.getMember(token);
+        return resumeService.getResume(resumeId);
+    }
 }
