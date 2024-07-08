@@ -2,9 +2,11 @@ package com.example.joboasis.domain.recruitment.entity;
 
 import com.example.joboasis.common.entity.BaseEntity;
 import com.example.joboasis.domain.company.entity.CompanyMember;
-import com.example.joboasis.domain.recruitment.dto.RecruitmentDto;
+import com.example.joboasis.domain.recruitment.dto.RecruitmentRequestDto;
+import com.example.joboasis.domain.recruitment.dto.RecruitmentResponseDto;
 import com.example.joboasis.domain.recruitment.enums.RecruitmentStatus;
 import jakarta.persistence.*;
+import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,9 +17,8 @@ import java.time.LocalDateTime;
 
 @Entity
 @Getter
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Recruitment extends BaseEntity {
-
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "recruitment_id")
@@ -41,15 +42,19 @@ public class Recruitment extends BaseEntity {
 	public Recruitment(
 		String title,
 		Integer recruitmentCount,
-		LocalDateTime closingDate
+		LocalDateTime closingDate,
+		String detail,
+		CompanyMember companyMember
 	) {
 		this.title = title;
 		this.recruitmentCount = recruitmentCount;
 		this.closingDate = closingDate;
+		this.detail = detail;
+		this.companyMember = companyMember;
 	}
 
-	public RecruitmentDto.Response toDto() {
-		return RecruitmentDto.Response.builder()
+	public RecruitmentResponseDto fromEntity() {
+		return RecruitmentResponseDto.builder()
 			.recruitmentId(this.id)
 			.title(this.title)
 			.recruitmentCount(this.recruitmentCount)
@@ -62,11 +67,12 @@ public class Recruitment extends BaseEntity {
 			.build();
 	}
 
-	public Recruitment update(RecruitmentDto.Request request) {
+	public Recruitment update(RecruitmentRequestDto request) {
 		this.title = request.title();
 		this.recruitmentCount = request.recruitmentCount();
 		this.closingDate = request.closingDate();
 		this.status = request.status();
+		this.detail = request.detail();
 
 		return this;
 	}

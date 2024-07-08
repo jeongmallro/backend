@@ -1,5 +1,6 @@
 package com.example.joboasis.domain.company.entity;
 
+import com.example.joboasis.domain.recruitment.entity.Recruitment;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -21,6 +22,9 @@ public class CompanyMember {
 	private Integer employeesNumber;
 	private String location;
 	private String info;
+
+	@OneToOne(mappedBy = "companyMember", fetch = FetchType.LAZY)
+	private Recruitment recruitment;
 
 	@Builder
 	public CompanyMember(
