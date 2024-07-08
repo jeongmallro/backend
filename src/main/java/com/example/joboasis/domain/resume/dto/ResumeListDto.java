@@ -1,15 +1,13 @@
 package com.example.joboasis.domain.resume.dto;
 
-import com.example.joboasis.domain.resume.entity.ResumeStatus;
+import com.example.joboasis.domain.resume.enums.ResumeStatus;
 
 import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
 
 import java.time.LocalDateTime;
 
 @Builder
-@Setter
 @Getter
 public class ResumeListDto {
 
@@ -19,3 +17,5 @@ public class ResumeListDto {
     private LocalDateTime modifiedDate;
 
 }
+
+

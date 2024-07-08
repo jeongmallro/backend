@@ -6,7 +6,6 @@ import java.util.List;
 
 @Builder
 @Getter
-@Setter
 public class ResumeResponseDto {
 
     private Long resumeId;

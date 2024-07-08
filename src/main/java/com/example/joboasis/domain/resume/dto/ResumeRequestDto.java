@@ -1,18 +1,16 @@
 package com.example.joboasis.domain.resume.dto;
 
 import com.example.joboasis.domain.resume.entity.Resume;
-import com.example.joboasis.domain.resume.entity.ResumeStatus;
+import com.example.joboasis.domain.resume.enums.ResumeStatus;
 
 import lombok.*;
 
 import java.util.List;
 
-@Builder
 @Getter
-@Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class ResumeDto {
+public class ResumeRequestDto {
 
     private String title;
     private String intro;
