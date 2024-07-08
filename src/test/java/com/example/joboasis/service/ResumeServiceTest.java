@@ -76,5 +76,23 @@ class ResumeServiceTest {
         assertThat(modifiedResumeDto.getIntro()).isEqualTo(newIntro);
     }
 
+    @Test
+    @DisplayName("정상 이력서 조회")
+    void findByResumeId() {
+
+        //given
+        ResumeRequestDto resumeDto = new ResumeRequestDto("이력서 제목 1", "꼼꼼한 3년차 개발자입니다.", null, null, null);
+        Member memberA = new Member( "Kim", "Kim1234");
+        Member savedMember = memberRepository.save(memberA);
+        Long memberId = savedMember.getId();
+
+        //when
+        ResumeResponseDto savedResumeDto = resumeService.addResume(resumeDto, memberId);
+        ResumeResponseDto resumeDtoFound = resumeService.getResume(savedResumeDto.getResumeId());
+
+        //then
+        assertThat(savedResumeDto.getResumeId()).isEqualTo(resumeDtoFound.getResumeId());
+
+    }
 
 }
