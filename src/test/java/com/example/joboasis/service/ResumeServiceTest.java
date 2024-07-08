@@ -53,4 +53,28 @@ class ResumeServiceTest {
 
     }
 
+    @Test
+    @DisplayName("정상 이력서 수정")
+    void modifyResume() {
+
+        //given
+        ResumeRequestDto resumeDto = new ResumeRequestDto("이력서 제목 1", "꼼꼼한 3년차 개발자입니다.", null, null, null);
+        Member memberA = new Member( "Kim", "Kim1234");
+        Member savedMember = memberRepository.save(memberA);
+        Long memberId = savedMember.getId();
+
+        String newTitle = "이력서 제목 1 수정";
+        String newIntro = "열정 넘치는 3년차 개발자입니다.";
+        ResumeRequestDto newResumeDto = new ResumeRequestDto(newTitle, newIntro, null, null, null);
+
+        //when
+        ResumeResponseDto savedResumeDto = resumeService.addResume(resumeDto, memberId);
+        ResumeResponseDto modifiedResumeDto = resumeService.modifyResume(savedResumeDto.getResumeId(), newResumeDto);
+
+        //then
+        assertThat(modifiedResumeDto.getTitle()).isEqualTo(newTitle);
+        assertThat(modifiedResumeDto.getIntro()).isEqualTo(newIntro);
+    }
+
+
 }
