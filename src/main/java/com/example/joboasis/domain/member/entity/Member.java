@@ -18,7 +18,7 @@ public class Member {
 	private String loginId;
 
 	@Builder
-	Member(
+	public Member(
 		String name,
 		String loginId
 	) {
