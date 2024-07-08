@@ -41,9 +41,9 @@ class ResumeServiceTest {
 
         //given
         ResumeRequestDto resumeDto = new ResumeRequestDto("이력서 제목 1", "꼼꼼한 3년차 개발자입니다.", null, null, null);
-        Member memberA = new Member("Kim");
+        Member memberA = new Member("Kim","Kim1234");
         Member savedMember = memberRepository.save(memberA);
-        Long memberId = savedMember.getMemberId();
+        Long memberId = savedMember.getId();
 
         //when
         ResumeResponseDto savedResumeDto = resumeService.addResume(resumeDto, memberId);

@@ -30,8 +30,8 @@ public class ResumeService {
         //1. token 복호화
         //2. 1번으로부터 사용자 아이디(혹은 사용자 이메일 겟)
         Long memberId = token;
-        Member member = memberRepository.findByMemberId(memberId).orElseThrow(IllegalArgumentException::new);
-        return member.getMemberId();
+        Member member = memberRepository.findById(memberId).orElseThrow(IllegalArgumentException::new);
+        return member.getId();
         //3. 예외 처리
 
         /*
@@ -50,7 +50,7 @@ public class ResumeService {
     @Transactional
     public ResumeResponseDto addResume(ResumeRequestDto resumeDto, Long memberId) {
         Resume resume = resumeDto.toEntity();
-        Member member = memberRepository.findByMemberId(memberId).orElseThrow(IllegalArgumentException::new);  //코드 중복
+        Member member = memberRepository.findById(memberId).orElseThrow(IllegalArgumentException::new);  //코드 중복
         resume.setMember(member);
         Resume savedResume = resumeRepository.save(resume);
         log.info("resumeId={}", savedResume.getResumeId());
