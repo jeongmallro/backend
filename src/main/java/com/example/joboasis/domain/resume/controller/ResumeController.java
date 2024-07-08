@@ -1,5 +1,6 @@
 package com.example.joboasis.domain.resume.controller;
 
+import com.example.joboasis.domain.resume.dto.ResumeListDto;
 import com.example.joboasis.domain.resume.dto.ResumeRequestDto;
 import com.example.joboasis.domain.resume.dto.ResumeResponseDto;
 import com.example.joboasis.domain.resume.service.ResumeService;
@@ -9,6 +10,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.ArrayList;
 
 @RestController
 @RequiredArgsConstructor
@@ -39,4 +42,11 @@ public class ResumeController {
         resumeService.getMember(token);
         return resumeService.getResume(resumeId);
     }
+
+    @GetMapping
+    public ArrayList<ResumeListDto> getResumes(@RequestHeader Long token) {  //@CookieValue String
+        Long memberId = resumeService.getMember(token);
+        return resumeService.getResumes(memberId);
+    }
+
 }

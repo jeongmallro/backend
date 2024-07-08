@@ -2,6 +2,7 @@ package com.example.joboasis.service;
 
 import com.example.joboasis.domain.member.entity.Member;
 import com.example.joboasis.domain.member.repository.MemberRepository;
+import com.example.joboasis.domain.resume.dto.ResumeListDto;
 import com.example.joboasis.domain.resume.dto.ResumeRequestDto;
 import com.example.joboasis.domain.resume.dto.ResumeResponseDto;
 import com.example.joboasis.domain.resume.repository.ResumeRepository;
@@ -15,6 +16,8 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+
+import java.util.ArrayList;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -50,7 +53,6 @@ class ResumeServiceTest {
 
         //then
         assertThat(resumeDto.getTitle()).isEqualTo(savedResumeDto.getTitle());
-
     }
 
     @Test
@@ -92,7 +94,26 @@ class ResumeServiceTest {
 
         //then
         assertThat(savedResumeDto.getResumeId()).isEqualTo(resumeDtoFound.getResumeId());
+    }
 
+    @Test
+    @DisplayName("정상 이력서 리스트 조회")
+    void findResumeList() {
+
+        //given
+        ResumeRequestDto resumeDto = new ResumeRequestDto("이력서 제목 1", "꼼꼼한 3년차 개발자입니다.", null, null, null);
+        ResumeRequestDto resumeDto2 = new ResumeRequestDto("이력서 제목 2", "열정 넘치는 3년차 개발자입니다.", null, null, null);
+        Member memberA = new Member( "Kim", "Kim1234");
+        Member savedMember = memberRepository.save(memberA);
+        Long memberId = savedMember.getId();
+
+        //when
+        resumeService.addResume(resumeDto, memberId);
+        resumeService.addResume(resumeDto2, memberId);
+        ArrayList<ResumeListDto> resumeList = resumeService.getResumes(memberId);
+
+        //then
+        assertThat(resumeList.size()).isEqualTo(2);
     }
 
 }
