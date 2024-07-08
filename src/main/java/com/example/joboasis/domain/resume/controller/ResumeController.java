@@ -24,4 +24,12 @@ public class ResumeController {
         ResumeResponseDto newResumeDto = resumeService.addResume(resumeDto, memberId);
         return new ResponseEntity<>(newResumeDto, HttpStatus.CREATED);
     }
+
+    @PatchMapping("/{resume_id}")
+    public ResumeResponseDto modifyResume(@RequestHeader Long token,  //@CookieValue String
+                                          @PathVariable Long resumeId,
+                                          @RequestBody ResumeRequestDto resumeDto) {
+        resumeService.getMember(token);
+        return resumeService.modifyResume(resumeId, resumeDto);
+    }
 }

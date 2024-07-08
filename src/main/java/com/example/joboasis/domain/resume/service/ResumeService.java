@@ -46,7 +46,6 @@ public class ResumeService {
          */
     }
 
-
     @Transactional
     public ResumeResponseDto addResume(ResumeRequestDto resumeDto, Long memberId) {
         Resume resume = resumeDto.toEntity();
@@ -56,6 +55,13 @@ public class ResumeService {
         log.info("resumeId={}", savedResume.getResumeId());
 
         return savedResume.toResponseDto();
+    }
+
+    @Transactional
+    public ResumeResponseDto modifyResume(Long resumeId, ResumeRequestDto resumeDto) {
+        Resume resume = resumeRepository.findByResumeId(resumeId).orElseThrow(IllegalArgumentException::new);
+        resume.editResume(resumeDto);
+        return resume.toResponseDto();
     }
 
 }
