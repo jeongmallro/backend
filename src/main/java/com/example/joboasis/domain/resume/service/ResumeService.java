@@ -16,6 +16,9 @@ import org.hibernate.annotations.DynamicUpdate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Slf4j
 @Service
 @DynamicUpdate
@@ -68,5 +71,18 @@ public class ResumeService {
     public ResumeResponseDto getResume(Long resumeId) {
         Resume resume = resumeRepository.findByResumeId(resumeId).orElseThrow(IllegalArgumentException::new);  //예외 처리
         return resume.toResponseDto();
+    }
+
+    @Transactional(readOnly = true)
+    public ArrayList<ResumeListDto> getResumes(Long memberId) {
+        Member member = memberRepository.findById(memberId).orElseThrow(IllegalArgumentException::new);
+        List<Resume> resumes = resumeRepository.findAllByMember(member);  //코드 중복, null 처리
+        ArrayList<ResumeListDto> resumeDtoList = new ArrayList<>();
+
+        for (Resume resume : resumes) {
+            resumeDtoList.add(resume.toListDto());
+        }
+
+        return resumeDtoList;
     }
 }
