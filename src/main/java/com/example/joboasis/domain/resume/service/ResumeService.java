@@ -85,4 +85,10 @@ public class ResumeService {
 
         return resumeDtoList;
     }
+
+    @Transactional
+    public void removeResume(Long resumeId) {
+        Resume findResume = resumeRepository.findByResumeId(resumeId).orElseThrow(IllegalArgumentException::new);
+        resumeRepository.delete(findResume);
+    }
 }

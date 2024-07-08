@@ -49,4 +49,12 @@ public class ResumeController {
         return resumeService.getResumes(memberId);
     }
 
+    @DeleteMapping("/{resume_id}")
+    public void removeResume(@PathVariable Long resumeId,
+                             @RequestHeader Long token) {  //@CookieValue String
+        resumeService.getMember(token);
+        resumeService.removeResume(resumeId);
+    }
+
+
 }

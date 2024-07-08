@@ -1,4 +1,4 @@
-package com.example.joboasis.service;
+package com.example.joboasis.domain.resume.service;
 
 import com.example.joboasis.domain.member.entity.Member;
 import com.example.joboasis.domain.member.repository.MemberRepository;
@@ -20,6 +20,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import java.util.ArrayList;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @Slf4j
 @SpringBootTest
@@ -114,6 +115,25 @@ class ResumeServiceTest {
 
         //then
         assertThat(resumeList.size()).isEqualTo(2);
+    }
+
+    @Test
+    @DisplayName("정상 이력서 삭제")
+    void deleteResume() {
+
+        //given
+        ResumeRequestDto resumeDto = new ResumeRequestDto("이력서 제목 1", "꼼꼼한 3년차 개발자입니다.", null, null, null);
+        Member memberA = new Member( "Kim", "Kim1234");
+        Member savedMember = memberRepository.save(memberA);
+        Long memberId = savedMember.getId();
+
+        //when
+        ResumeResponseDto savedResumeDto = resumeService.addResume(resumeDto, memberId);
+        Long savedResumeId = savedResumeDto.getResumeId();
+        resumeService.removeResume(savedResumeId);
+
+        //then
+        assertThatThrownBy(() -> resumeService.getResume(savedResumeId)).isInstanceOf(IllegalArgumentException.class);
     }
 
 }
