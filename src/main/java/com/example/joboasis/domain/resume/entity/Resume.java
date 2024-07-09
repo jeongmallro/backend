@@ -37,16 +37,14 @@ public class Resume extends BaseEntity {
     private Member member;
 
     @Builder
-    public Resume(String title, String intro, ResumeStatus status, List<String> careerList, List<String> educationList, List<String> skill) {
+    public Resume(String title, String intro, ResumeStatus status, List<String> careerList,
+                  List<String> educationList, List<String> skill, Member member) {
         this.title = title;
         this.intro = intro;
         this.status = status;
         this.careerList = careerList;
         this.educationList = educationList;
         this.skill = skill;
-    }
-
-    public void setMember(Member member) {
         this.member = member;
     }
 
