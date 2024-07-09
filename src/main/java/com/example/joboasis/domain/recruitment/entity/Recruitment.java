@@ -34,7 +34,7 @@ public class Recruitment extends BaseEntity {
 	private LocalDateTime modifiedDate;
 	private String detail;
 
-	@OneToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "company_member_id")
 	private CompanyMember companyMember;
 

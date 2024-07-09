@@ -7,6 +7,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -23,8 +25,8 @@ public class CompanyMember {
 	private String location;
 	private String info;
 
-	@OneToOne(mappedBy = "companyMember", fetch = FetchType.LAZY)
-	private Recruitment recruitment;
+	@OneToMany(mappedBy = "companyMember", fetch = FetchType.LAZY)
+	private List<Recruitment> recruitment;
 
 	@Builder
 	public CompanyMember(
