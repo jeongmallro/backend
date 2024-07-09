@@ -28,16 +28,16 @@ public class ResumeController {
         return new ResponseEntity<>(newResumeDto, HttpStatus.CREATED);
     }
 
-    @PatchMapping("/{resume_id}")
+    @PutMapping("/{resume_id}")
     public ResumeResponseDto modifyResume(@RequestHeader Long token,  //@CookieValue String
-                                          @PathVariable Long resumeId,
+                                          @PathVariable(name = "resume_id") Long resumeId,
                                           @RequestBody ResumeRequestDto resumeDto) {
         resumeService.getMember(token);
         return resumeService.modifyResume(resumeId, resumeDto);
     }
 
     @GetMapping("/{resume_id}")
-    public ResumeResponseDto getResume(@PathVariable Long resumeId,
+    public ResumeResponseDto getResume(@PathVariable(name = "resume_id") Long resumeId,
                                        @RequestHeader Long token) {  //@CookieValue String
         resumeService.getMember(token);
         return resumeService.getResume(resumeId);
@@ -50,11 +50,10 @@ public class ResumeController {
     }
 
     @DeleteMapping("/{resume_id}")
-    public void removeResume(@PathVariable Long resumeId,
+    public void removeResume(@PathVariable(name = "resume_id") Long resumeId,
                              @RequestHeader Long token) {  //@CookieValue String
         resumeService.getMember(token);
         resumeService.removeResume(resumeId);
     }
-
 
 }

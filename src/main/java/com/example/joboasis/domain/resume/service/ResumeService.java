@@ -50,9 +50,8 @@ public class ResumeService {
 
     @Transactional
     public ResumeResponseDto addResume(ResumeRequestDto resumeDto, Long memberId) {
-        Resume resume = resumeDto.toEntity();
         Member member = memberRepository.findById(memberId).orElseThrow(IllegalArgumentException::new);  //코드 중복
-        resume.setMember(member);
+        Resume resume = resumeDto.toEntity(member);
         Resume savedResume = resumeRepository.save(resume);
         log.info("resumeId={}", savedResume.getResumeId());
 
@@ -69,7 +68,7 @@ public class ResumeService {
 
     @Transactional(readOnly = true)
     public ResumeResponseDto getResume(Long resumeId) {
-        Resume resume = resumeRepository.findByResumeId(resumeId).orElseThrow(IllegalArgumentException::new);  //예외 처리
+        Resume resume = resumeRepository.findByResumeId(resumeId).orElseThrow(IllegalArgumentException::new);
 
         return resume.toResponseDto();
     }
