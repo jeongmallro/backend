@@ -24,7 +24,6 @@ import java.util.List;
 @DynamicUpdate
 @RequiredArgsConstructor
 public class ResumeService {
-
     private final ResumeRepository resumeRepository;
     private final MemberRepository memberRepository;
 
@@ -64,12 +63,14 @@ public class ResumeService {
     public ResumeResponseDto modifyResume(Long resumeId, ResumeRequestDto resumeDto) {
         Resume resume = resumeRepository.findByResumeId(resumeId).orElseThrow(IllegalArgumentException::new);
         resume.editResume(resumeDto);
+
         return resume.toResponseDto();
     }
 
     @Transactional(readOnly = true)
     public ResumeResponseDto getResume(Long resumeId) {
         Resume resume = resumeRepository.findByResumeId(resumeId).orElseThrow(IllegalArgumentException::new);  //예외 처리
+
         return resume.toResponseDto();
     }
 
