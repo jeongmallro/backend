@@ -6,6 +6,8 @@ import com.example.joboasis.domain.recruitment.service.RecruitmentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequiredArgsConstructor
 public class RecruitmentController {
@@ -20,5 +22,10 @@ public class RecruitmentController {
 	public RecruitmentResponseDto modifyRecruitment(@PathVariable(name = "id") Long recruitmentId,
 													@RequestBody RecruitmentRequestDto request) {
 		return recruitmentService.modifyRecruitment(recruitmentId, request);
+	}
+
+	@GetMapping("/recruitments")
+	public List<RecruitmentResponseDto> getRecruitmentList() {
+		return recruitmentService.getRecruitmentList();
 	}
 }

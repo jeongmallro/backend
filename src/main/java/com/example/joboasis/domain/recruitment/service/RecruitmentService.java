@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Objects;
 
 @Service
@@ -39,5 +40,13 @@ public class RecruitmentService {
 		}
 
 		return recruitment.update(request).fromEntity();
+	}
+
+	@Transactional(readOnly = true)
+	public List<RecruitmentResponseDto> getRecruitmentList() {
+		// TODO 공고 상태에 따른 조회로 변경
+		List<Recruitment> recruitments = recruitmentRepository.findAll();
+
+		return recruitments.stream().map(Recruitment::fromEntity).toList();
 	}
 }
