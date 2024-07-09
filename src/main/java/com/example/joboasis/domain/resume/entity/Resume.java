@@ -5,11 +5,12 @@ import com.example.joboasis.domain.member.entity.Member;
 import com.example.joboasis.domain.resume.dto.ResumeListDto;
 import com.example.joboasis.domain.resume.dto.ResumeRequestDto;
 import com.example.joboasis.domain.resume.dto.ResumeResponseDto;
-
 import com.example.joboasis.domain.resume.enums.ResumeStatus;
 import jakarta.persistence.*;
-
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 
@@ -22,19 +23,13 @@ public class Resume extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "resume_id")
     private Long resumeId;
-
     private String title;
-
     private String intro;
-
     private ResumeStatus status;
-
     @Column(name = "career_list")
     private List<String> careerList;
-
     @Column(name = "education_list")
     private List<String> educationList;
-
     private List<String> skill;
 
     @ManyToOne

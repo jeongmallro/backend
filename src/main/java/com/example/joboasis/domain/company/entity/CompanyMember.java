@@ -1,10 +1,13 @@
 package com.example.joboasis.domain.company.entity;
 
+import com.example.joboasis.domain.recruitment.entity.Recruitment;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.util.List;
 
 @Entity
 @Getter
@@ -21,6 +24,9 @@ public class CompanyMember {
 	private Integer employeesNumber;
 	private String location;
 	private String info;
+
+	@OneToMany(mappedBy = "companyMember", fetch = FetchType.LAZY)
+	private List<Recruitment> recruitment;
 
 	@Builder
 	public CompanyMember(
