@@ -42,6 +42,18 @@ public class RecruitmentService {
 		return recruitment.update(request).fromEntity();
 	}
 
+	@Transactional
+	public void deleteRecruitment(Long recruitmentId, RecruitmentRequestDto request) {
+		Recruitment recruitment = recruitmentRepository.findById(recruitmentId)
+			.orElseThrow(() -> new RuntimeException("존재하지 않는 공고 ID"));
+
+		if (!Objects.equals(recruitment.getCompanyMember().getId(), request.companyMemberId())) {
+			throw new RuntimeException("해당 공고를 삭제할 권한이 없습니다.");
+		}
+
+		recruitmentRepository.deleteById(recruitmentId);
+	}
+
 	@Transactional(readOnly = true)
 	public List<RecruitmentResponseDto> getRecruitmentList() {
 		// TODO 공고 상태에 따른 조회로 변경
