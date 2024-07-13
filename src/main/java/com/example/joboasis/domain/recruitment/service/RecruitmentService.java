@@ -61,4 +61,12 @@ public class RecruitmentService {
 
 		return recruitments.stream().map(Recruitment::fromEntity).toList();
 	}
+
+	@Transactional(readOnly = true)
+	public RecruitmentResponseDto getRecruitment(Long recruitmentId) {
+		Recruitment recruitment = recruitmentRepository.findById(recruitmentId)
+			.orElseThrow(() -> new RuntimeException("존재하지 않는 공고입니다."));
+
+		return recruitment.fromEntity();
+	}
 }

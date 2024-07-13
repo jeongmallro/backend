@@ -34,4 +34,9 @@ public class RecruitmentController {
 	public List<RecruitmentResponseDto> getRecruitmentList() {
 		return recruitmentService.getRecruitmentList();
 	}
+
+	@GetMapping("/recruitments/{id}")
+	public RecruitmentResponseDto getRecruitment(@PathVariable(name = "id") Long recruitmentId) {
+		return recruitmentService.getRecruitment(recruitmentId);
+	}
 }
