@@ -21,14 +21,11 @@ public class Resume extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "resume_id")
     private Long resumeId;
     private String title;
     private String intro;
     private ResumeStatus status;
-    @Column(name = "career_list")
     private List<String> careerList;
-    @Column(name = "education_list")
     private List<String> educationList;
     private List<String> skill;
 
