@@ -24,6 +24,7 @@ public class Resume extends BaseEntity {
     private Long resumeId;
     private String title;
     private String intro;
+    @Enumerated(EnumType.STRING)
     private ResumeStatus status;
     private List<String> careerList;
     private List<String> educationList;
