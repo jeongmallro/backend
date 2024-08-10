@@ -24,9 +24,9 @@ public class SecurityConfig {
                 .httpBasic((authorize) -> authorize.disable())
                 .formLogin((authorize) -> authorize.disable())
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/**").permitAll()
-
-                        .anyRequest().authenticated())
+//                        .requestMatchers("/**").permitAll()
+//                        .anyRequest().authenticated()
+                        .anyRequest().permitAll())  //Test 코드 실행을 위해
                 .sessionManagement((session) -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
