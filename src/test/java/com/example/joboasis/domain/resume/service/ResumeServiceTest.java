@@ -1,12 +1,12 @@
 package com.example.joboasis.domain.resume.service;
 
 import com.example.joboasis.domain.member.entity.Member;
+import com.example.joboasis.domain.member.enums.MemberJob;
 import com.example.joboasis.domain.member.repository.MemberRepository;
 import com.example.joboasis.domain.resume.dto.ResumeListDto;
 import com.example.joboasis.domain.resume.dto.ResumeRequestDto;
 import com.example.joboasis.domain.resume.dto.ResumeResponseDto;
 import com.example.joboasis.domain.resume.repository.ResumeRepository;
-import com.example.joboasis.domain.resume.service.ResumeService;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -45,7 +45,7 @@ class ResumeServiceTest {
 
         //given
         ResumeRequestDto resumeDto = new ResumeRequestDto("이력서 제목 1", "꼼꼼한 3년차 개발자입니다.", null, null, null);
-        Member memberA = new Member("Kim","Kim1234");
+        Member memberA = new Member("Kim","Kim1234", "kim1234@joboasis.com", "password","01012345678", MemberJob.SOFTWARE_DEVELOPMENT);
         Member savedMember = memberRepository.save(memberA);
         Long memberId = savedMember.getId();
 
@@ -62,7 +62,7 @@ class ResumeServiceTest {
 
         //given
         ResumeRequestDto resumeDto = new ResumeRequestDto("이력서 제목 1", "꼼꼼한 3년차 개발자입니다.", null, null, null);
-        Member memberA = new Member( "Kim", "Kim1234");
+        Member memberA = new Member("Kim","Kim1234", "kim1234@joboasis.com", "password","01012345678", MemberJob.SOFTWARE_DEVELOPMENT);
         Member savedMember = memberRepository.save(memberA);
         Long memberId = savedMember.getId();
 
@@ -85,7 +85,7 @@ class ResumeServiceTest {
 
         //given
         ResumeRequestDto resumeDto = new ResumeRequestDto("이력서 제목 1", "꼼꼼한 3년차 개발자입니다.", null, null, null);
-        Member memberA = new Member( "Kim", "Kim1234");
+        Member memberA = new Member("Kim","Kim1234", "kim1234@joboasis.com", "password","01012345678", MemberJob.SOFTWARE_DEVELOPMENT);
         Member savedMember = memberRepository.save(memberA);
         Long memberId = savedMember.getId();
 
@@ -104,7 +104,7 @@ class ResumeServiceTest {
         //given
         ResumeRequestDto resumeDto = new ResumeRequestDto("이력서 제목 1", "꼼꼼한 3년차 개발자입니다.", null, null, null);
         ResumeRequestDto resumeDto2 = new ResumeRequestDto("이력서 제목 2", "열정 넘치는 3년차 개발자입니다.", null, null, null);
-        Member memberA = new Member( "Kim", "Kim1234");
+        Member memberA = new Member("Kim","Kim1234", "kim1234@joboasis.com", "password","01012345678", MemberJob.SOFTWARE_DEVELOPMENT);
         Member savedMember = memberRepository.save(memberA);
         Long memberId = savedMember.getId();
 
@@ -123,7 +123,7 @@ class ResumeServiceTest {
 
         //given
         ResumeRequestDto resumeDto = new ResumeRequestDto("이력서 제목 1", "꼼꼼한 3년차 개발자입니다.", null, null, null);
-        Member memberA = new Member( "Kim", "Kim1234");
+        Member memberA = new Member("Kim","Kim1234", "kim1234@joboasis.com", "password","01012345678", MemberJob.SOFTWARE_DEVELOPMENT);
         Member savedMember = memberRepository.save(memberA);
         Long memberId = savedMember.getId();
 

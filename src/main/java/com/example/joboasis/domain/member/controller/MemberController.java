@@ -1,0 +1,45 @@
+package com.example.joboasis.domain.member.controller;
+
+import com.example.joboasis.domain.member.dto.MemberRequestDto;
+import com.example.joboasis.domain.member.dto.MemberResponseDto;
+import com.example.joboasis.domain.member.service.MailService;
+import com.example.joboasis.domain.member.service.MemberService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+@RestController
+@RequiredArgsConstructor
+public class MemberController {
+
+    private final MemberService memberService;
+    private final MailService mailService;
+
+    @PostMapping("/check-email")  //이메일 중복 확인
+    public boolean checkEmail(@RequestParam String email) {
+        return memberService.checkEmail(email);
+    }
+
+    @PostMapping("/check-id")  //아이디 중복 확인
+    public boolean checkId(@RequestParam String loginId) {
+        return memberService.checkId(loginId);
+    }
+
+    @PostMapping("/send-email-code")  //인증번호 받기 버튼 클릭 -> 인증번호 메일 전송
+    public void sendEmailCode(@RequestParam String email) {
+        mailService.sendMail(email);
+    }
+
+    @PostMapping("/verify-email")  //인증번호 확인
+    public boolean verifyEmail(@RequestParam String verificationCode,
+                               @RequestParam String email) {
+        return mailService.checkVerificationCode(email, verificationCode);
+    }
+
+    @PostMapping("/signup")
+    public ResponseEntity<MemberResponseDto> addMember(@RequestBody MemberRequestDto memberDto) {
+        MemberResponseDto newMemberDto = memberService.addMember(memberDto);
+        return new ResponseEntity<>(newMemberDto, HttpStatus.CREATED);
+    }
+}
