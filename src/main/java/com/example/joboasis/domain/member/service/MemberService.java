@@ -28,7 +28,7 @@ public class MemberService {
         return memberRepository.existsByLoginId(loginId);
     }
 
-    @Transactional
+    @Transactional  //정상 이메일 인증 후에만 가입 가능
     public MemberResponseDto addMember(MemberRequestDto memberDto) {
         String encodedPassword = bCryptPasswordEncoder.encode(memberDto.getPassword());
         Member member = memberDto.toEntity(encodedPassword);
