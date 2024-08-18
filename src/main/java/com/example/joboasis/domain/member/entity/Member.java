@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Member {
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "member_id")
@@ -24,6 +25,12 @@ public class Member {
 	@Enumerated(EnumType.STRING)
 	private MemberJob job;
 	private String authority;
+
+	public Member(String loginId, String authority) {
+		this.loginId = loginId;
+		this.password = "temppassword";
+		this.authority = authority;
+	}
 
 	@Builder
 	public Member(String name, String loginId, String email, String password, String phoneNumber, MemberJob job) {
