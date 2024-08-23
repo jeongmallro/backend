@@ -1,11 +1,13 @@
-package com.example.joboasis.filter;
+package com.example.joboasis.security.filter;
 
 import com.example.joboasis.domain.member.entity.Member;
+import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
@@ -13,6 +15,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 
 @RequiredArgsConstructor
 public class JWTFilter extends OncePerRequestFilter {
@@ -22,36 +25,52 @@ public class JWTFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
-        String authorization = request.getHeader("Authorization");
+        String authorization = request.getHeader(HttpHeaders.AUTHORIZATION);  //Header 로부터 access token 얻기
 
         if (authorization == null || !authorization.startsWith("Bearer")) {
             filterChain.doFilter(request, response);
             return;
         }
 
-        String token = authorization.split(" ")[1];  //Bearer 제거
+        String accessToken = authorization.split(" ")[1];  //Bearer 제거
 
-        if (jwtUtil.isExpired(token)) {
-            filterChain.doFilter(request, response);
+        try {  //access token 만료 확인
+            jwtUtil.isExpired(accessToken);
+        } catch (ExpiredJwtException e) {
+
+            //response body
+            PrintWriter writer = response.getWriter();
+            writer.print("access token expired");
+
+            //response status code
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             return;
         }
 
-        String loginId = jwtUtil.getLoginId(token);
-        String authority = jwtUtil.getAuthority(token);
+        String category = jwtUtil.getCategory(accessToken);
+
+        if (!category.equals("access")) {  //access token 이 맞는지 확인
+
+            //response body
+            PrintWriter writer = response.getWriter();
+            writer.print("invalid access token");
+
+            //response status code
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            return;
+        }
+
+        String loginId = jwtUtil.getLoginId(accessToken);
+        String authority = jwtUtil.getAuthority(accessToken);
 
         Member member = new Member(loginId, authority);
 
-        /**
-         * DaoAuthenticationProvider 가 authentication 성공 시 수행했던 행동과 같음
-         * UserDetails 를 principal 로 가지는 UsernamePasswordAuthenticationToken 로 반환
-         * SecurityContextHolder 에 올라감
-         */
-
-        //UserDetails에 회원 정보 객체 담기
-        CustomUserDetails customUserDetails = new CustomUserDetails(member);  //디비에서 다시 찾아올 필요가 없다.
+        //UserDetails 에 회원 정보 객체 담기
+        CustomUserDetails customUserDetails = new CustomUserDetails(member);
 
         //스프링 시큐리티 인증 토큰 생성
         Authentication authToken = UsernamePasswordAuthenticationToken.authenticated(customUserDetails, null, customUserDetails.getAuthorities());
+
         //세션에 사용자 등록
         SecurityContext context = SecurityContextHolder.createEmptyContext();
         context.setAuthentication(authToken);

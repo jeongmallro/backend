@@ -1,10 +1,13 @@
-package com.example.joboasis.filter;
+package com.example.joboasis.security.filter;
 
+import com.example.joboasis.security.refresh.RefreshService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletInputStream;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -13,6 +16,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.security.web.util.matcher.OrRequestMatcher;
 import org.springframework.util.StreamUtils;
 
 import java.io.IOException;
@@ -21,25 +25,21 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
 
-public class SigninFilter extends AbstractAuthenticationProcessingFilter {  //JSON 으로 loginId, password 받는 CustomAbstractAuthenticationProcessingFilter 구현
+public class SigninFilter extends AbstractAuthenticationProcessingFilter {  //JSON 으로 loginId, password 값 받아서 JWT Token 반환
 
     public static final String USERNAME_KEY = "loginId";
-
     public static final String PASSWORD_KEY = "password";
-
-    private static final AntPathRequestMatcher DEFAULT_ANT_PATH_REQUEST_MATCHER = new AntPathRequestMatcher("/signin", "POST");
-
     private boolean postOnly = true;
-
     private final JWTUtil jwtUtil;
-
     private final ObjectMapper objectMapper;
+    private final RefreshService refreshService;
 
-
-    public SigninFilter(JWTUtil jwtUtil, ObjectMapper objectMapper, AuthenticationManager authenticationManager) {
-        super(DEFAULT_ANT_PATH_REQUEST_MATCHER, authenticationManager);
+    public SigninFilter(JWTUtil jwtUtil, ObjectMapper objectMapper, AuthenticationManager authenticationManager, RefreshService refreshService) {
+        super(new OrRequestMatcher(new AntPathRequestMatcher("/signin", "POST"),
+                new AntPathRequestMatcher("/company/signin", "POST")), authenticationManager);
         this.jwtUtil = jwtUtil;
         this.objectMapper = objectMapper;
+        this.refreshService = refreshService;
     }
 
     @Override
@@ -62,46 +62,52 @@ public class SigninFilter extends AbstractAuthenticationProcessingFilter {  //JS
         String password = loginIdPasswordMap.get(PASSWORD_KEY);
 
         //MessageBody 로 부터 추출한 loginId, password 값을 가지고 UsernamePasswordAuthenticationToken 생성
-        UsernamePasswordAuthenticationToken authenticationToken = UsernamePasswordAuthenticationToken.unauthenticated(loginId, password);  //since 5.7
-
-        Object principal = authenticationToken.getPrincipal();
-        /**
-         * AuthenticationManager 이 authentication 을 수행하도록 UsernamePasswordAuthenticationToken 패스
-         * AuthenticationManager 의 구현체 AuthenticationProvider 종류 중 DaoAuthenticationProvider 가 UserDetailService 를 통해 UserDetails 찾아온다. (loadUserByUsername)
-         * PasswordEncoder 를 사용해서 UserDetails 의 password 를 입증한다.
-         * authentication 이 반환되고 결과에 따라 아래의 메서드 중 하나 수행 (AbstractAuthenticationProcessingFilter 소스코드 참조)
-         */
+        UsernamePasswordAuthenticationToken authenticationToken = UsernamePasswordAuthenticationToken.unauthenticated(loginId, password);
 
         return this.getAuthenticationManager().authenticate(authenticationToken);
     }
 
-    /**
-     * authentication 성공 시, jwt 토큰 생성해서 응답
-     * 아래와 같이 커스텀했기 때문에 authentication 성공 시에 DaoAuthenticationProvider 가 수행하기로 했던 행동은 사라짐
-     */
+
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authentication) {
 
         //authentication 에서 loginId 값 추출
-        CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
-        String loginId = customUserDetails.getUsername();
+        String loginId = authentication.getName();
 
         //authentication 에서 authority 추출
         Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
         Iterator<? extends GrantedAuthority> iterator = authorities.iterator();
         GrantedAuthority auth = iterator.next();
-
         String authority = auth.getAuthority();
 
-        //jwt 토큰 생성
-        String token = jwtUtil.createJwt(loginId, authority, 60 * 10 * 10 * 10 * 10L);  //10분
+        //토큰 생성
+        String access = jwtUtil.createJwt("access", loginId, authority, 600000L);  //10분
+        String refresh = jwtUtil.createJwt("refresh", loginId, authority, 86400000L);  //24시간
 
-        response.addHeader("Authorization", "Bearer " + token);
+        //Refresh 토큰 저장
+        refreshService.addRefresh(loginId, refresh, 86400000L);
+
+        //응답 설정
+        response.setHeader("Authorization", "Bearer " + access);  //쿠키 방식으로 전송시에 "Bearer " 이후 띄어쓰기가 들어가면 쿠키에서 오류가 발생
+        response.addCookie(createCookie("refresh", refresh));
+        response.setStatus(HttpStatus.OK.value());
     }
 
 
     @Override
     protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) {
         response.setStatus(401);
+    }
+
+
+    private Cookie createCookie(String key, String value) {
+
+        Cookie cookie = new Cookie(key, value);
+        cookie.setMaxAge(24*60*60);
+        //cookie.setSecure(true);
+        //cookie.setPath("/");
+        cookie.setHttpOnly(true);
+
+        return cookie;
     }
 }

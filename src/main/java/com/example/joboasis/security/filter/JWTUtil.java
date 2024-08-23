@@ -1,4 +1,4 @@
-package com.example.joboasis.filter;
+package com.example.joboasis.security.filter;
 
 import io.jsonwebtoken.Jwts;
 import org.springframework.beans.factory.annotation.Value;
@@ -18,6 +18,11 @@ public class JWTUtil {
         secretKey = new SecretKeySpec(secret.getBytes(StandardCharsets.UTF_8), Jwts.SIG.HS256.key().build().getAlgorithm());
     }
 
+    public String getCategory(String token) {
+
+        return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("category", String.class);
+    }
+
     public String getLoginId(String token) {
 
         return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("loginId", String.class);
@@ -33,9 +38,10 @@ public class JWTUtil {
         return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().getExpiration().before(new Date());
     }
 
-    public String createJwt(String loginId, String authority, Long expiredMs) {
+    public String createJwt(String category, String loginId, String authority, Long expiredMs) {
 
         return Jwts.builder()
+                .claim("category", category)  //access, refresh
                 .claim("loginId", loginId)
                 .claim("authority", authority)
                 .issuedAt(new Date(System.currentTimeMillis()))
