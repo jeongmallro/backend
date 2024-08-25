@@ -41,6 +41,7 @@ public class RefreshController {
         //expired check
         try {
             jwtUtil.isExpired(refresh);
+            //refresh token 만료 시 로그아웃
         } catch (ExpiredJwtException e) {
 
             //response status code
