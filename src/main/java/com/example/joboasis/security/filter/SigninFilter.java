@@ -82,7 +82,7 @@ public class SigninFilter extends AbstractAuthenticationProcessingFilter {  //JS
 
         //토큰 생성
         String access = jwtUtil.createJwt("access", loginId, authority, 600000L);  //10분
-        String refresh = jwtUtil.createJwt("refresh", loginId, authority, 86400000L);  //24시간
+        String refresh = jwtUtil.createJwt("refresh", loginId, authority, 2592000000L);  //30일
 
         //Refresh 토큰 저장
         refreshService.addRefresh(loginId, refresh, 86400000L);
