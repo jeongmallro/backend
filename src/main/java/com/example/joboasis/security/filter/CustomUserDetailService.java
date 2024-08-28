@@ -1,4 +1,4 @@
-package com.example.joboasis.filter;
+package com.example.joboasis.security.filter;
 
 import com.example.joboasis.domain.member.entity.Member;
 import com.example.joboasis.domain.member.repository.MemberRepository;
@@ -16,7 +16,6 @@ public class CustomUserDetailService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-
         Member member = memberRepository.findByLoginId(username).orElseThrow(() -> new UsernameNotFoundException("해당 사용자가 존재하지 않습니다."));
 
         return new CustomUserDetails(member);

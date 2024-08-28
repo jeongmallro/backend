@@ -1,4 +1,4 @@
-package com.example.joboasis.filter;
+package com.example.joboasis.security.filter;
 
 import com.example.joboasis.domain.member.entity.Member;
 import lombok.RequiredArgsConstructor;

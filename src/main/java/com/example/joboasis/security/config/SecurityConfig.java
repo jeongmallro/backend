@@ -1,8 +1,9 @@
-package com.example.joboasis.config;
+package com.example.joboasis.security.config;
 
-import com.example.joboasis.filter.JWTFilter;
-import com.example.joboasis.filter.JWTUtil;
-import com.example.joboasis.filter.SigninFilter;
+import com.example.joboasis.security.filter.JWTFilter;
+import com.example.joboasis.security.filter.JWTUtil;
+import com.example.joboasis.security.filter.SigninFilter;
+import com.example.joboasis.security.refresh.RefreshService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -16,6 +17,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import static org.springframework.security.web.util.matcher.RegexRequestMatcher.regexMatcher;
+
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
@@ -24,6 +27,7 @@ public class SecurityConfig {
     private final JWTUtil jwtUtil;
     private final ObjectMapper objectMapper;
     private final AuthenticationConfiguration authenticationConfiguration;
+    private final RefreshService refreshService;
 
     @Bean
     public AuthenticationManager authenticationManager() throws Exception {
@@ -43,10 +47,14 @@ public class SecurityConfig {
                 .formLogin((authorize) -> authorize.disable())
 
                 .authorizeHttpRequests((authorize) -> authorize
-                        .requestMatchers("/signup", "/").permitAll()
-                        .anyRequest().authenticated())
+                        .requestMatchers("/signup/**", "/", "/company/signup").permitAll()
+                        .requestMatchers("/reissue").permitAll()
+                        .requestMatchers("/signout", "/profile", "/resumes/**", "/applications/**").hasRole("MEMBER")  //일반회원
+                        .requestMatchers(regexMatcher("/recruitments/[0-9]+/applications")).hasRole("MEMBER")
+                        .requestMatchers("/company/signout", "/recruitments/**").hasRole("COMPANY")  //기업회원
+                        .anyRequest().denyAll())
 
-                .addFilterAt(new SigninFilter(jwtUtil, objectMapper, authenticationManager()), UsernamePasswordAuthenticationFilter.class)
+                .addFilterAt(new SigninFilter(jwtUtil, objectMapper, authenticationManager(), refreshService), UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(new JWTFilter(jwtUtil), SigninFilter.class)
 
                 .sessionManagement((session) -> session

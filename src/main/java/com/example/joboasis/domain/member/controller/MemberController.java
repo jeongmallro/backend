@@ -16,22 +16,22 @@ public class MemberController {
     private final MemberService memberService;
     private final MailService mailService;
 
-    @PostMapping("/check-email")  //이메일 중복 확인
+    @PostMapping("/signup/check-email")  //이메일 중복 확인
     public boolean checkEmail(@RequestParam String email) {
         return memberService.checkEmail(email);
     }
 
-    @PostMapping("/check-id")  //아이디 중복 확인
+    @PostMapping("/signup/check-id")  //아이디 중복 확인
     public boolean checkId(@RequestParam String loginId) {
         return memberService.checkId(loginId);
     }
 
-    @PostMapping("/send-email-code")  //인증번호 받기 버튼 클릭 -> 인증번호 메일 전송
+    @PostMapping("/signup/send-email-code")  //인증번호 받기 버튼 클릭 -> 인증번호 메일 전송
     public void sendEmailCode(@RequestParam String email) {
         mailService.sendMail(email);
     }
 
-    @PostMapping("/verify-email")  //인증번호 확인
+    @PostMapping("/signup/verify-email")  //인증번호 확인
     public boolean verifyEmail(@RequestParam String verificationCode,
                                @RequestParam String email) {
         return mailService.checkVerificationCode(email, verificationCode);
