@@ -45,6 +45,7 @@ public class RefreshController {
 
             //response status code
             return new ResponseEntity<>("refresh token expired", HttpStatus.BAD_REQUEST);
+            //로그아웃
         }
 
         // 토큰이 refresh 인지 확인 (발급시 페이로드에 명시)
@@ -69,7 +70,7 @@ public class RefreshController {
 
         //make new JWT
         String newAccess = jwtUtil.createJwt("access", loginId, authority, 600000L);
-        String newRefresh = jwtUtil.createJwt("refresh", loginId, authority, 86400000L);
+        String newRefresh = jwtUtil.createJwt("refresh", loginId, authority, 2592000000L);  //30일
 
         //Refresh 토큰 저장 DB에 기존의 Refresh 토큰 삭제 후 새 Refresh 토큰 저장
         refreshService.deleteByRefresh(refresh);

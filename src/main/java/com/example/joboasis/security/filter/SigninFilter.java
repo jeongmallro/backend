@@ -29,7 +29,6 @@ public class SigninFilter extends AbstractAuthenticationProcessingFilter {  //JS
 
     public static final String USERNAME_KEY = "loginId";
     public static final String PASSWORD_KEY = "password";
-    private boolean postOnly = true;
     private final JWTUtil jwtUtil;
     private final ObjectMapper objectMapper;
     private final RefreshService refreshService;
@@ -46,7 +45,7 @@ public class SigninFilter extends AbstractAuthenticationProcessingFilter {  //JS
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException, IOException {  //IOException 처리
 
         //Http Method 에러 핸들링
-        if (this.postOnly && !request.getMethod().equals("POST")) {
+        if (!request.getMethod().equals("POST")) {
             throw new AuthenticationServiceException("Authentication method not supported: " + request.getMethod());
         }
 
@@ -82,7 +81,7 @@ public class SigninFilter extends AbstractAuthenticationProcessingFilter {  //JS
 
         //토큰 생성
         String access = jwtUtil.createJwt("access", loginId, authority, 600000L);  //10분
-        String refresh = jwtUtil.createJwt("refresh", loginId, authority, 86400000L);  //24시간
+        String refresh = jwtUtil.createJwt("refresh", loginId, authority, 2592000000L);  //30일
 
         //Refresh 토큰 저장
         refreshService.addRefresh(loginId, refresh, 86400000L);
