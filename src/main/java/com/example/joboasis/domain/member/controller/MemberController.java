@@ -42,4 +42,9 @@ public class MemberController {
         MemberResponseDto newMemberDto = memberService.addMember(memberDto);
         return new ResponseEntity<>(newMemberDto, HttpStatus.CREATED);
     }
+
+    @GetMapping("/profile")  //MEMBER 용 Authorization 테스트
+    public ResponseEntity getProfile() {
+        return new ResponseEntity<>("MEMBER is allowed here", HttpStatus.OK);
+    }
 }

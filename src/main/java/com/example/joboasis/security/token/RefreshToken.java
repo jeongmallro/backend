@@ -1,4 +1,4 @@
-package com.example.joboasis.security.refresh;
+package com.example.joboasis.security.token;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -11,18 +11,18 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Refresh {
+public class RefreshToken {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String loginId;
-    private String refresh;
+    private String token;
     private String expireDate;
 
-    public Refresh(String loginId, String refresh, String expireDate) {
+    public RefreshToken(String loginId, String token, String expireDate) {
         this.loginId = loginId;
-        this.refresh = refresh;
+        this.token = token;
         this.expireDate = expireDate;
     }
 }

@@ -1,12 +1,14 @@
 package com.example.joboasis.security.filter;
 
-import com.example.joboasis.security.refresh.RefreshService;
+import com.example.joboasis.security.token.RefreshTokenService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletInputStream;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationServiceException;
@@ -31,15 +33,19 @@ public class SigninFilter extends AbstractAuthenticationProcessingFilter {  //JS
     public static final String PASSWORD_KEY = "password";
     private final JWTUtil jwtUtil;
     private final ObjectMapper objectMapper;
-    private final RefreshService refreshService;
+    private final RefreshTokenService refreshTokenService;
+    @Value("${spring.jwt.refresh-token-expired-sec}")
+    private int refreshTokenExpiredSec;
 
-    public SigninFilter(JWTUtil jwtUtil, ObjectMapper objectMapper, AuthenticationManager authenticationManager, RefreshService refreshService) {
+
+    public SigninFilter(JWTUtil jwtUtil, ObjectMapper objectMapper, AuthenticationManager authenticationManager, RefreshTokenService refreshTokenService) {
         super(new OrRequestMatcher(new AntPathRequestMatcher("/signin", "POST"),
                 new AntPathRequestMatcher("/company/signin", "POST")), authenticationManager);
         this.jwtUtil = jwtUtil;
         this.objectMapper = objectMapper;
-        this.refreshService = refreshService;
+        this.refreshTokenService = refreshTokenService;
     }
+
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException, IOException {  //IOException 처리
@@ -61,9 +67,9 @@ public class SigninFilter extends AbstractAuthenticationProcessingFilter {  //JS
         String password = loginIdPasswordMap.get(PASSWORD_KEY);
 
         //MessageBody 로 부터 추출한 loginId, password 값을 가지고 UsernamePasswordAuthenticationToken 생성
-        UsernamePasswordAuthenticationToken authenticationToken = UsernamePasswordAuthenticationToken.unauthenticated(loginId, password);
+        Authentication authentication = UsernamePasswordAuthenticationToken.unauthenticated(loginId, password);
 
-        return this.getAuthenticationManager().authenticate(authenticationToken);
+        return this.getAuthenticationManager().authenticate(authentication);
     }
 
 
@@ -76,19 +82,19 @@ public class SigninFilter extends AbstractAuthenticationProcessingFilter {  //JS
         //authentication 에서 authority 추출
         Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
         Iterator<? extends GrantedAuthority> iterator = authorities.iterator();
-        GrantedAuthority auth = iterator.next();
-        String authority = auth.getAuthority();
+        GrantedAuthority grantedAuthority = iterator.next();
+        String authority = grantedAuthority.getAuthority();
 
         //토큰 생성
-        String access = jwtUtil.createJwt("access", loginId, authority, 600000L);  //10분
-        String refresh = jwtUtil.createJwt("refresh", loginId, authority, 2592000000L);  //30일
+        String accessToken = jwtUtil.createJwt("access", loginId, authority);
+        String refreshToken = jwtUtil.createJwt("refresh", loginId, authority);
 
-        //Refresh 토큰 저장
-        refreshService.addRefresh(loginId, refresh, 86400000L);
+        //Refresh 토큰 DB에 저장
+        refreshTokenService.addRefreshToken(loginId, refreshToken);
 
         //응답 설정
-        response.setHeader("Authorization", "Bearer " + access);  //쿠키 방식으로 전송시에 "Bearer " 이후 띄어쓰기가 들어가면 쿠키에서 오류가 발생
-        response.addCookie(createCookie("refresh", refresh));
+        response.setHeader(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken);  //쿠키 방식으로 전송시에 "Bearer " 이후 띄어쓰기가 들어가면 쿠키에서 오류가 발생
+        response.addCookie(createCookie("refreshToken", refreshToken));
         response.setStatus(HttpStatus.OK.value());
     }
 
@@ -102,10 +108,9 @@ public class SigninFilter extends AbstractAuthenticationProcessingFilter {  //JS
     private Cookie createCookie(String key, String value) {
 
         Cookie cookie = new Cookie(key, value);
-        cookie.setMaxAge(24*60*60);
-        //cookie.setSecure(true);
-        //cookie.setPath("/");
+        cookie.setMaxAge(refreshTokenExpiredSec);
         cookie.setHttpOnly(true);
+        //cookie.setSecure(true);
 
         return cookie;
     }

@@ -1,6 +1,6 @@
 package com.example.joboasis.security.filter;
 
-import com.example.joboasis.security.refresh.RefreshService;
+import com.example.joboasis.security.token.RefreshTokenService;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -12,7 +12,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.OrRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
-import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.filter.GenericFilterBean;
 
 import java.io.IOException;
@@ -20,13 +19,13 @@ import java.io.IOException;
 public class SignoutFilter extends GenericFilterBean {
 
     private final JWTUtil jwtUtil;
-    private final RefreshService refreshService;
+    private final RefreshTokenService refreshTokenService;
     private static final RequestMatcher signoutRequestMatcher = new OrRequestMatcher(new AntPathRequestMatcher("/signout", "POST"),
             new AntPathRequestMatcher("/company/signout", "POST"));
 
-    public SignoutFilter(JWTUtil jwtUtil, RefreshService refreshService) {
+    public SignoutFilter(JWTUtil jwtUtil, RefreshTokenService refreshTokenService) {
         this.jwtUtil = jwtUtil;
-        this.refreshService = refreshService;
+        this.refreshTokenService = refreshTokenService;
     }
 
     @Override
@@ -37,9 +36,10 @@ public class SignoutFilter extends GenericFilterBean {
 
     private void doFilter(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws IOException, ServletException {
 
-        //Http Method 에러 핸들링
-        if (!request.getMethod().equals("POST")) {
-            throw new HttpRequestMethodNotSupportedException("Signout method not supported: " + request.getMethod());
+        //signoutRequestMatcher 와 일치하지 않으면 SignoutFilter 통과
+        if (!signoutRequestMatcher.matches(request)) {
+            filterChain.doFilter(request, response);
+            return;
         }
 
         //get refresh token
@@ -47,7 +47,7 @@ public class SignoutFilter extends GenericFilterBean {
         Cookie[] cookies = request.getCookies();
         for (Cookie cookie : cookies) {
 
-            if (cookie.getName().equals("refresh")) {
+            if (cookie.getName().equals("refreshToken")) {
 
                 refresh = cookie.getValue();
             }
@@ -71,8 +71,8 @@ public class SignoutFilter extends GenericFilterBean {
         }
 
         // 토큰이 refresh 인지 확인 (발급시 페이로드에 명시)
-        String category = jwtUtil.getCategory(refresh);
-        if (!category.equals("refresh")) {
+        String tokenType = jwtUtil.getTokenType(refresh);
+        if (!tokenType.equals("refresh")) {
 
             //response status code
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
@@ -80,7 +80,7 @@ public class SignoutFilter extends GenericFilterBean {
         }
 
         //DB에 저장되어 있는지 확인
-        Boolean isExist = refreshService.existsByRefresh(refresh);
+        Boolean isExist = refreshTokenService.existsByRefreshToken(refresh);
         if (!isExist) {
 
             //response status code
@@ -90,14 +90,16 @@ public class SignoutFilter extends GenericFilterBean {
 
         //로그아웃 진행
         //Refresh 토큰 DB에서 제거
-        refreshService.deleteByRefresh(refresh);
+        refreshTokenService.deleteByRefreshToken(refresh);
 
         //Refresh 토큰 Cookie 값 0
-        Cookie cookie = new Cookie("refresh", null);
+        Cookie cookie = new Cookie("refreshToken", null);
         cookie.setMaxAge(0);
         cookie.setPath("/");
 
         response.addCookie(cookie);
         response.setStatus(HttpServletResponse.SC_OK);
     }
+
+
 }
