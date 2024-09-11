@@ -45,6 +45,8 @@ dependencies {
     implementation 'io.jsonwebtoken:jjwt-jackson:0.12.6'
     //SpringBoot의 JavaMailSender auto-configuration
     implementation 'org.springframework.boot:spring-boot-starter-mail:3.3.2'
+    //Swagger
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.6.0'
 }
 
 tasks.named('test') {

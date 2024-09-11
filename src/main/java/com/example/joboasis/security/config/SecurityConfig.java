@@ -6,6 +6,7 @@ import com.example.joboasis.security.filter.JWTUtil;
 import com.example.joboasis.security.filter.SigninFilter;
 import com.example.joboasis.security.token.RefreshTokenService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -55,6 +56,7 @@ public class SecurityConfig {
                         .requestMatchers("/profile", "/resumes/**", "/applications/**").hasRole("MEMBER")  //일반회원
                         .requestMatchers(regexMatcher("/recruitments/[0-9]+/applications")).hasRole("MEMBER")
                         .requestMatchers("/recruitments/**").hasRole("COMPANY")  //기업회원
+                        .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()  //Swagger
                         .anyRequest().denyAll())
 
                 .addFilterAt(new SigninFilter(jwtUtil, objectMapper, authenticationManager(), refreshTokenService), UsernamePasswordAuthenticationFilter.class)
