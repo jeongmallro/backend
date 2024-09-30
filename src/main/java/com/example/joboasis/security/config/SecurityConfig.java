@@ -51,13 +51,13 @@ public class SecurityConfig {
                 .logout((logout) -> logout.disable())
 
                 .authorizeHttpRequests((authorize) -> authorize
-                        .requestMatchers("/company/signout", "/signout", "/signup/**", "/", "/company/signup").permitAll()
-                        .requestMatchers("/reissue").permitAll()
-                        .requestMatchers("/profile", "/resumes/**", "/applications/**").hasRole("MEMBER")  //일반회원
-                        .requestMatchers(regexMatcher("/recruitments/[0-9]+/applications")).hasRole("MEMBER")
-                        .requestMatchers("/recruitments/**").hasRole("COMPANY")  //기업회원
-                        .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()  //Swagger
-                        .anyRequest().denyAll())
+//                        .requestMatchers("/company/signout", "/signout", "/signup/**", "/", "/company/signup").permitAll()
+//                        .requestMatchers("/reissue").permitAll()
+//                        .requestMatchers("/profile", "/resumes/**", "/applications/**").hasRole("MEMBER")  //일반회원
+//                        .requestMatchers(regexMatcher("/recruitments/[0-9]+/applications")).hasRole("MEMBER")
+//                        .requestMatchers("/recruitments/**").hasRole("COMPANY")  //기업회원
+//                        .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()  //Swagger
+                        .anyRequest().permitAll())
 
                 .addFilterAt(new SigninFilter(jwtUtil, objectMapper, authenticationManager(), refreshTokenService), UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(new JWTFilter(jwtUtil), SigninFilter.class)
