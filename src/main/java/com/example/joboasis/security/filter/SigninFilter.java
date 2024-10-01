@@ -101,7 +101,7 @@ public class SigninFilter extends AbstractAuthenticationProcessingFilter {  //JS
 
     @Override
     protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) {
-        response.setStatus(401);
+        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
     }
 
 
