@@ -32,7 +32,8 @@ public class ResumeService {
         //1. token 복호화
         //2. 1번으로부터 사용자 아이디(혹은 사용자 이메일 겟)
         Long memberId = token;
-        Member member = memberRepository.findById(memberId).orElseThrow(IllegalArgumentException::new);
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 사용자가 존재하지 않습니다."));
         return member.getId();
         //3. 예외 처리
 
