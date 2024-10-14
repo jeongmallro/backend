@@ -2,13 +2,16 @@
 
 # 채용 사이트 JobOasis
 
-## 팀원: 백엔드 2명
-## 기간: 2024.06 ~
-## DB: MySQL
-## ORM: Spring Data JPA, JPA
-## 서버: AWS EC2
-## 프레임워크: Spring Boot
-## 프로그래밍 언어: Java
+## 프로젝트 구성
+ * 팀원: 백엔드 2명
+ * 기간: 2024.06 ~
+
+## 스택
+ * DB: MySQL
+ * ORM: Spring Data JPA, JPA
+ * 서버: AWS EC2
+ * 프레임워크: Spring Boot
+ * 프로그래밍 언어: Java
 
 ## 세부 내용
  * 일반 회원 및 기업 회원 관리
